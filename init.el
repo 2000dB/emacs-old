@@ -1,4 +1,7 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; GENERAL
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (setq inhibit-splash-screen t) ;; no splashscreen
 (tool-bar-mode -1)             ;; turn off toolbar 
 (menu-bar-mode -1)             ;; turn off menubar
@@ -6,8 +9,10 @@
 (setq initial-scratch-message  ;; scratch message
       ";; scratch buffer \n")
 
+
+
 ;; LOAD PATH
-(let* ((my-lisp-dir "~/.emacs.d/") ;; add everything under ~/.emacs.d to it
+(let* ((my-lisp-dir "~/.emacs.d/")
        (default-directory my-lisp-dir))
   (setq load-path (cons my-lisp-dir load-path))
   (normal-top-level-add-subdirs-to-load-path))
@@ -25,7 +30,7 @@
   (eval `(defadvice ,command (after indent-region activate)
 	   (indent-region (region-beginning) (region-end) nil))))
 
-;; SCROLLING
+;; scrolling
 (setq 
   scroll-margin 0
   scroll-conservatively 100000
@@ -87,7 +92,7 @@
 (setq
  ido-save-directory-list-file "~/.emacs.d/cache/ido.last"
  ido-ignore-buffers ;; ignore the following buffer names
- '("\\` " "^\*Mess" "^\*Back" ".*Completion" "^\*Ido" "^\*trace"
+ '("\\` " "^\*Mess" "\*scra" "^\*Back" ".*Completion" "^\*Ido" "^\*trace"
    "^\*compilation" "^\*GTAGS" "^session\.*" "^\*")
  ido-work-directory-list '("~/" "~/Desktop" "~/Documents" "~src")
  ido-case-fold  t                 ; be case-insensitive
@@ -97,7 +102,7 @@
  ido-use-filename-at-point nil    ; don't use filename at point (annoying)
  ido-enable-flex-matching nil     ; don't try to be too smart
  ido-max-prospects 8              ; don't spam my minibuffer
- ido-confirm-unique-completion t) ; wait for RET, even with unique completion
+ ido-confirm-unique-completion nil) ; wait for RET, even with unique completion
 
 ;; uniquify
 (require 'uniquify) ;; makes buffer names unique without <2> type stuff
@@ -125,3 +130,64 @@
 (require 'yasnippet)
 (yas/load-directory "~/.emacs.d/packages/yasnippet-0.6.1c/snippets")
 (yas/global-mode 1)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; KEY BINDINGS
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; keymap
+(defvar vdb-keys-minor-mode-map (make-keymap) "vdb-keys-minor-mode.")
+
+;; define all the mappings here
+(define-key vdb-keys-minor-mode-map (kbd "C-c C-c") 'vdb-compile)
+
+;; create the minor mode
+(define-minor-mode vdb-keys-minor-mode
+  "clean way of mapping my bidings with major modes"
+  t " vdb-keys" 'vdb-keys-minor-mode-map)
+
+(vdb-keys-minor-mode t) ;; make it global
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; COMPILATION 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(require 'compile)
+
+;; ;; lets make the compile behave how we want: small horizontal buffer
+(defun vdb-compile ()
+  (interactive)
+  (progn
+    (call-interactively 'compile)
+    ;; XXX : for some reason the resizing fucks up when used with the vdb-keys-minor-mode
+    (setq cur (selected-window))
+    (setq w (get-buffer-window "*compilation*"))
+    (select-window w)
+    (setq h (window-height w))
+    (shrink-window (- h 10))
+    (select-window cur)
+    )
+  )
+
+;; make the compile window split vertically
+(defadvice compile (around split-vertically activate)
+  (let ((split-width-threshold nil)
+	(split-height-threshold 0))
+    ad-do-it))
+
+;; python
+(add-hook 'python-mode-hook
+	  (lambda ()
+	    (set (make-local-variable 'compile-command)
+		 (let ((file (file-name-nondirectory buffer-file-name)))
+		   (format "%s %s"
+			   (or "python")
+			   file)))))
+
+;; java/processing via ant
+(add-hook 'java-mode-hook
+	  (lambda ()
+	    (set (make-local-variable 'compile-command)
+		   (format "%s -find" ;; for now just look for the build file in the tree
+			   (or "ant")
+			   ))))
