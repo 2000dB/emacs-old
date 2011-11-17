@@ -3,13 +3,14 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (setq inhibit-splash-screen t) ;; no splashscreen
-(tool-bar-mode -1)             ;; turn off toolbar 
+(tool-bar-mode -1)             ;; turn off toolbar
+(scroll-bar-mode -1)           ;; turn off scrollbar
 (menu-bar-mode -1)             ;; turn off menubar
 (fset 'yes-or-no-p 'y-or-n-p)  ;; yes/no - y/n
 (setq initial-scratch-message  ;; scratch message
       ";; scratch buffer \n")
 
-
+(global-set-key (kbd "RET") 'newline-and-indent)
 
 ;; LOAD PATH
 (let* ((my-lisp-dir "~/.emacs.d/")
@@ -18,13 +19,6 @@
   (normal-top-level-add-subdirs-to-load-path))
 
 ;; GLOBAL BINDINGS
-(global-set-key (kbd "RET") 'newline-and-indent)
-(global-set-key (kbd "M-1") 'delete-other-windows)
-(global-set-key (kbd "M-2") 'split-window-horizontally)
-(global-set-key (kbd "M-3") 'split-window-vertically)
-(global-set-key (kbd "C-c c") 'comment-region)
-(global-set-key (kbd "C-c u") 'uncomment-region)
-
 ;; Yank and indent
 (dolist (command '(yank yank-pop))
   (eval `(defadvice ,command (after indent-region activate)
@@ -39,8 +33,12 @@
   scroll-preserve-screen-position t)
 
 ;; LINUM
-(global-linum-mode 1)
 (setq linum-format "%4d ")
+(global-linum-mode 1)
+(setq linum-disabled-modes-list '(eshell-mode  compilation-mode))
+(defun linum-on ()
+  (unless (or (minibufferp) (member major-mode linum-disabled-modes-list))
+    (linum-mode 1)))
 
 ;; MODELINE
 (line-number-mode t)     ;; show line numbers
@@ -133,21 +131,36 @@
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; KEY BINDINGS
+;; KEY BINDINGS/vdb-global
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(require 'rect-mark)
 
 ;; keymap
 (defvar vdb-keys-minor-mode-map (make-keymap) "vdb-keys-minor-mode.")
-
-;; define all the mappings here
 (define-key vdb-keys-minor-mode-map (kbd "C-c C-c") 'vdb-compile)
+(define-key vdb-keys-minor-mode-map (kbd "C-c C-r") 'replace-string)
+(define-key vdb-keys-minor-mode-map (kbd "C-c r C-SPC") 'rm-set-mark)
+(define-key vdb-keys-minor-mode-map (kbd "C-c r C-r") 'replace-rectangle)
+(define-key vdb-keys-minor-mode-map (kbd "C-c r C-w")   'rm-kill-region)
+(define-key vdb-keys-minor-mode-map (kbd "C-c r M-w")   'rm-kill-ring-save)
+(define-key vdb-keys-minor-mode-map (kbd "M-1") 'delete-other-windows)
+(define-key vdb-keys-minor-mode-map (kbd "M-2") 'split-window-horizontally)
+(define-key vdb-keys-minor-mode-map (kbd "M-3") 'split-window-vertically)
+(define-key vdb-keys-minor-mode-map (kbd "C-c c") 'comment-region)
+(define-key vdb-keys-minor-mode-map (kbd "C-c u") 'uncomment-region)
 
 ;; create the minor mode
 (define-minor-mode vdb-keys-minor-mode
   "clean way of mapping my bidings with major modes"
   t " vdb-keys" 'vdb-keys-minor-mode-map)
-
 (vdb-keys-minor-mode t) ;; make it global
+
+;; (defvar avr-minor-mode-map (make-keymap) "avr-minor-mode.")
+;; (define-key vdb-keys-minor-mode-map (kbd "C-c C-j") 'newline-and-indent)
+
+;; (define-minor-mode avr-minor-mode
+;;   "avr keymap and other thigies"
+;;   t "avr-minor-mode" avr-minor-mode-map')
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; COMPILATION 
