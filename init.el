@@ -7,10 +7,12 @@
 (scroll-bar-mode -1)           ;; turn off scrollbar
 (menu-bar-mode -1)             ;; turn off menubar
 (fset 'yes-or-no-p 'y-or-n-p)  ;; yes/no - y/n
+(setq confirm-nonexistent-file-or-buffer nil) ;; don't prompt to create new file
+(setq kill-buffer-query-functions ;; kill buffer without prompting if there's a running process
+      (remq 'process-kill-buffer-query-function
+	    kill-buffer-query-functions))
 (setq initial-scratch-message  ;; scratch message
       ";; scratch buffer \n")
-
-(global-set-key (kbd "RET") 'newline-and-indent)
 
 ;; LOAD PATH
 (let* ((my-lisp-dir "~/.emacs.d/")
@@ -19,10 +21,10 @@
   (normal-top-level-add-subdirs-to-load-path))
 
 ;; GLOBAL BINDINGS
-;; Yank and indent
-(dolist (command '(yank yank-pop))
+(dolist (command '(yank yank-pop)) ;; yank and indent
   (eval `(defadvice ,command (after indent-region activate)
 	   (indent-region (region-beginning) (region-end) nil))))
+(global-set-key (kbd "RET") 'newline-and-indent) ;; maintain indention level on new line
 
 ;; scrolling
 (setq 
@@ -56,7 +58,7 @@
 (setq 
   icomplete-prospects-height 1
   icomplete-compute-delay 0)
-(require 'icomplete+ nil 'noerror)
+(require 'icomplete+)
 
 ;; CACHE
 ;; backups
@@ -84,12 +86,22 @@
 ;; PACKAGES 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; autocomplete
+(add-to-list 'load-path "~/.emacs.d/packages/autocomplete")    ; This may not be appeared if you have already added.
+(require 'auto-complete-config)
+(add-to-list 'ac-dictionary-directories "~/.emacs.d/packages/autocomplete")
+(ac-config-default)
+(set-face-background 'ac-candidate-face "444444")
+(set-face-underline 'ac-candidate-face "#222222")
+(set-face-background 'ac-selection-face "#666666")
+(set-face-foreground 'ac-selection-face "#00ffff")
+
 ;; ido
 (require 'ido)
 (ido-mode 'both) ;; buffers and files
 (setq
  ido-save-directory-list-file "~/.emacs.d/cache/ido.last"
- ido-ignore-buffers ;; ignore the following buffer names
+ ido-ignore-buffers ;; ignore the following buffer names in C-x b
  '("\\` " "^\*Mess" "\*scra" "^\*Back" ".*Completion" "^\*Ido" "^\*trace"
    "^\*compilation" "^\*GTAGS" "^session\.*" "^\*")
  ido-work-directory-list '("~/" "~/Desktop" "~/Documents" "~src")
@@ -100,6 +112,7 @@
  ido-use-filename-at-point nil    ; don't use filename at point (annoying)
  ido-enable-flex-matching nil     ; don't try to be too smart
  ido-max-prospects 8              ; don't spam my minibuffer
+ ido-create-new-buffer 'always    ; 
  ido-confirm-unique-completion nil) ; wait for RET, even with unique completion
 
 ;; uniquify
@@ -154,13 +167,6 @@
   "clean way of mapping my bidings with major modes"
   t " vdb-keys" 'vdb-keys-minor-mode-map)
 (vdb-keys-minor-mode t) ;; make it global
-
-;; (defvar avr-minor-mode-map (make-keymap) "avr-minor-mode.")
-;; (define-key vdb-keys-minor-mode-map (kbd "C-c C-j") 'newline-and-indent)
-
-;; (define-minor-mode avr-minor-mode
-;;   "avr keymap and other thigies"
-;;   t "avr-minor-mode" avr-minor-mode-map')
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; COMPILATION 
