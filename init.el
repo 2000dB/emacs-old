@@ -1,3 +1,4 @@
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; GENERAL
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -54,11 +55,11 @@
   minibuffer-scroll-window nil
   resize-mini-windows nil)
 
-(icomplete-mode t)            
+(require 'icomplete+)
 (setq 
   icomplete-prospects-height 1
   icomplete-compute-delay 0)
-(require 'icomplete+)
+(icomplete-mode t)
 
 ;; CACHE
 ;; backups
@@ -97,6 +98,7 @@
 (set-face-foreground 'ac-selection-face "#00ffff")
 
 ;; ido
+;; XXX : suppress new buffer when too many completions
 (require 'ido)
 (ido-mode 'both) ;; buffers and files
 (setq
@@ -142,11 +144,33 @@
 (yas/load-directory "~/.emacs.d/packages/yasnippet-0.6.1c/snippets")
 (yas/global-mode 1)
 
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; KEY BINDINGS/vdb-global
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(require 'rect-mark)
+
+;; Word Counter
+(defun vdb-count-words (&optional begin end)
+  "count words in the selected region if available, otherwise in whole buffer"
+  (interactive "r")
+  (let ((b (if mark-active begin (point-min)))
+	(e (if mark-active end (point-max))))
+    (message "word count: %s" (how-many "\\w+" b e))))
+
+;; Remove 
+(defun vdb-remove-m ()
+  (interactive)
+  (save-match-data
+    (save-excursion
+      (let ((remove-count 0))
+	(goto-char (point-min))
+	(while (re-search-forward (concat (char-to-string 13) "$") (point-max) t)
+	  (setq remove-count (+ remove-count 1))
+	  (replace-match "" nil nil))
+	(message (format "%d  removed from buffer." remove-count))))))
+
+
+
+(require 'rect-mark) ;; rectangle selection highlight
 
 ;; keymap
 (defvar vdb-keys-minor-mode-map (make-keymap) "vdb-keys-minor-mode.")
@@ -154,6 +178,7 @@
 (define-key vdb-keys-minor-mode-map (kbd "C-c C-r") 'replace-string)
 (define-key vdb-keys-minor-mode-map (kbd "C-c r C-SPC") 'rm-set-mark)
 (define-key vdb-keys-minor-mode-map (kbd "C-c r C-r") 'replace-rectangle)
+(define-key vdb-keys-minor-mode-map (kbd "C-c r C-i") 'string-insert-rectangle)
 (define-key vdb-keys-minor-mode-map (kbd "C-c r C-w")   'rm-kill-region)
 (define-key vdb-keys-minor-mode-map (kbd "C-c r M-w")   'rm-kill-ring-save)
 (define-key vdb-keys-minor-mode-map (kbd "M-1") 'delete-other-windows)
@@ -161,6 +186,8 @@
 (define-key vdb-keys-minor-mode-map (kbd "M-3") 'split-window-vertically)
 (define-key vdb-keys-minor-mode-map (kbd "C-c c") 'comment-region)
 (define-key vdb-keys-minor-mode-map (kbd "C-c u") 'uncomment-region)
+(define-key vdb-keys-minor-mode-map (kbd "C-c w") 'vdb-count-words)
+(define-key vdb-keys-minor-mode-map (kbd "C-c m") 'vdb-remove-m)
 
 ;; create the minor mode
 (define-minor-mode vdb-keys-minor-mode
@@ -210,3 +237,19 @@
 		   (format "%s -find" ;; for now just look for the build file in the tree
 			   (or "ant")
 			   ))))
+
+(require 'org)
+(require 'org-latex)
+(unless (boundp 'org-export-latex-classes)
+  (setq org-export-latex-classes nil))
+(add-to-list 'org-export-latex-classes
+	     `("vdb-basic-paper"
+	       "\\documentclass[12pt,letterpaper]{article}"
+	       ("\\part{%s}" . "\\part*{%s}")
+	       ("\\chapter{%s}" . "\\chapter*{%s}")
+	       ("\\section{%s}" . "\\section*{%s}")
+	       ("\\subsection{%s}" . "\\subsection*{%s}")
+	       ("\\subsubsection{%s}" . "\\subsubsection*{%s}"))
+	     )
+
+
