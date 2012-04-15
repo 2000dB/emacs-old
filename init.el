@@ -21,6 +21,10 @@
   (setq load-path (cons my-lisp-dir load-path))
   (normal-top-level-add-subdirs-to-load-path))
 
+;; FACE
+(set-face-background 'region "#ffffff")
+(set-face-background 'region "#ff0000")
+
 ;; GLOBAL BINDINGS
 (dolist (command '(yank yank-pop)) ;; yank and indent
   (eval `(defadvice ,command (after indent-region activate)
@@ -87,13 +91,18 @@
 ;; PACKAGES 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; lookup
+(autoload 'lookup-google "lookup-word-on-internet" "Lookup in browser" t)
+(autoload 'lookup-wikipedia "lookup-word-on-internet" "Lookup in browser" t)
+(autoload 'lookup-word-definition "lookup-word-on-internet" "Lookup in browser" t)
+
 ;; autocomplete
 (add-to-list 'load-path "~/.emacs.d/packages/autocomplete")    ; This may not be appeared if you have already added.
 (require 'auto-complete-config)
 (add-to-list 'ac-dictionary-directories "~/.emacs.d/packages/autocomplete")
 (ac-config-default)
-(set-face-background 'ac-candidate-face "444444")
-(set-face-underline 'ac-candidate-face "#222222")
+(set-face-background 'ac-candidate-face "#ffffff")
+(set-face-foreground 'ac-candidate-face "#666666")
 (set-face-background 'ac-selection-face "#666666")
 (set-face-foreground 'ac-selection-face "#00ffff")
 
@@ -168,8 +177,6 @@
 	  (replace-match "" nil nil))
 	(message (format "%d  removed from buffer." remove-count))))))
 
-
-
 (require 'rect-mark) ;; rectangle selection highlight
 
 ;; keymap
@@ -188,6 +195,9 @@
 (define-key vdb-keys-minor-mode-map (kbd "C-c u") 'uncomment-region)
 (define-key vdb-keys-minor-mode-map (kbd "C-c w") 'vdb-count-words)
 (define-key vdb-keys-minor-mode-map (kbd "C-c m") 'vdb-remove-m)
+(define-key vdb-keys-minor-mode-map (kbd "C-h C-g") 'lookup-google)
+(define-key vdb-keys-minor-mode-map (kbd "C-h C-d") 'lookup-word-definition)
+(define-key vdb-keys-minor-mode-map (kbd "C-h C-w") 'lookup-wikipedia)
 
 ;; create the minor mode
 (define-minor-mode vdb-keys-minor-mode
