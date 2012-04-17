@@ -1,4 +1,3 @@
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; GENERAL
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -15,7 +14,9 @@
 (setq initial-scratch-message  ;; scratch message
       ";; scratch buffer \n")
 
-;; LOAD PATH
+(server-start) ;; start emacs server
+
+;; Load PATH
 (let* ((my-lisp-dir "~/.emacs.d/")
        (default-directory my-lisp-dir))
   (setq load-path (cons my-lisp-dir load-path))
@@ -248,18 +249,15 @@
 			   (or "ant")
 			   ))))
 
-(require 'org)
 (require 'org-latex)
 (unless (boundp 'org-export-latex-classes)
   (setq org-export-latex-classes nil))
 (add-to-list 'org-export-latex-classes
-	     `("vdb-basic-paper"
-	       "\\documentclass[12pt,letterpaper]{article}"
-	       ("\\part{%s}" . "\\part*{%s}")
-	       ("\\chapter{%s}" . "\\chapter*{%s}")
+	     '("letter"
+	       "\\documentclass[11pt]{letter}"
+
 	       ("\\section{%s}" . "\\section*{%s}")
 	       ("\\subsection{%s}" . "\\subsection*{%s}")
-	       ("\\subsubsection{%s}" . "\\subsubsection*{%s}"))
-	     )
-
-
+	       ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+	       ("\\paragraph{%s}" . "\\paragraph*{%s}")
+	       ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))

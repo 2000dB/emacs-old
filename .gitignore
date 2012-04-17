@@ -1,9 +1,6 @@
-################################
-# emacs clutter
-################################
 #*
+*.*~
 backups/*
 cache/auto-save-list/*
 cache/ido.last
 cache/recentfiles
-
