@@ -241,6 +241,7 @@
 			   (or "python")
 			   file)))))
 
+
 ;; java/processing via ant
 (add-hook 'java-mode-hook
 	  (lambda ()
@@ -248,6 +249,19 @@
 		   (format "%s -find" ;; for now just look for the build file in the tree
 			   (or "ant")
 			   ))))
+
+
+;; org
+(setq load-path (cons "~/.emacs.d/packages/org-jambu/lisp" load-path))
+(setq load-path (cons "~/.emacs.d/packages/org-jambu/contrib/lisp" load-path))
+
+(require 'org-install)
+(add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
+
+;; automatically load spell check in org mode
+(add-hook 'org-mode-hook
+	  (lambda ()
+	    (flyspell-mode)))
 
 (require 'org-latex)
 (unless (boundp 'org-export-latex-classes)
