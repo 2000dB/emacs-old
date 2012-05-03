@@ -187,8 +187,9 @@
 (define-key vdb-keys-minor-mode-map (kbd "C-c r C-SPC") 'rm-set-mark)
 (define-key vdb-keys-minor-mode-map (kbd "C-c r C-r") 'replace-rectangle)
 (define-key vdb-keys-minor-mode-map (kbd "C-c r C-i") 'string-insert-rectangle)
-(define-key vdb-keys-minor-mode-map (kbd "C-c r C-w")   'rm-kill-region)
-(define-key vdb-keys-minor-mode-map (kbd "C-c r M-w")   'rm-kill-ring-save)
+(define-key vdb-keys-minor-mode-map (kbd "C-c r C-r") 'string-rectangle)
+(define-key vdb-keys-minor-mode-map (kbd "C-c r C-w") 'rm-kill-region)
+(define-key vdb-keys-minor-mode-map (kbd "C-c r M-w") 'rm-kill-ring-save)
 (define-key vdb-keys-minor-mode-map (kbd "M-1") 'delete-other-windows)
 (define-key vdb-keys-minor-mode-map (kbd "M-2") 'split-window-horizontally)
 (define-key vdb-keys-minor-mode-map (kbd "M-3") 'split-window-vertically)
@@ -249,7 +250,6 @@
 		   (format "%s -find" ;; for now just look for the build file in the tree
 			   (or "ant")
 			   ))))
-
 
 ;; org
 (setq load-path (cons "~/.emacs.d/packages/org-jambu/lisp" load-path))

@@ -115,7 +115,7 @@ For a list of online reference sites, see:
 (defun lookup-word-definition (&optional input-word)
   "See `lookup-word-on-internet'."
   (interactive)
-  (let ((dictUrl "http://oxforddictionaries.com/definition/�" ))
+  (let ((dictUrl "http://www.thefreedictionary.com/�" ))
     (lookup-word-on-internet input-word dictUrl) ) )
 
 (defun lookup-wiktionary (&optional input-word)
