@@ -23,8 +23,9 @@
   (normal-top-level-add-subdirs-to-load-path))
 
 ;; FACE
-(set-face-background 'region "#ffffff")
-(set-face-background 'region "#ff0000")
+(set-face-foreground 'region "#ffffff")
+;; (set-face-background 'region "#ff0000")
+(set-face-attribute 'region nil :background "red") ;; weird 24.x bug
 
 ;; GLOBAL BINDINGS
 (dolist (command '(yank yank-pop)) ;; yank and indent
