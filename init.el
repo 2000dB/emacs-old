@@ -255,14 +255,11 @@
 			   (or "ant")
 			   ))))
 
-<<<<<<< HEAD
-=======
 ;; c-mode with tab 4 space for .ino (propinquity)
 (add-to-list 'auto-mode-alist '("\\.ino\\'" . c-mode))
 (setq tab-width 4) ; or any other preferred value
 (defvaralias 'c-basic-offset 'tab-width)
 
->>>>>>> 20d143c53aef280a4b8780f8eeb90497dba847ef
 ;; org
 (setq load-path (cons "~/.emacs.d/packages/org-jambu/lisp" load-path))
 (setq load-path (cons "~/.emacs.d/packages/org-jambu/contrib/lisp" load-path))
