@@ -1,7 +1,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; GENERAL
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (setq inhibit-splash-screen t) ;; no splashscreen
 (tool-bar-mode -1)             ;; turn off toolbar
 (scroll-bar-mode -1)           ;; turn off scrollbar
@@ -76,6 +75,7 @@
   kept-new-versions 2
   kept-old-versions 5
   delete-old-versions t)
+
 
 ;; autosave
 (setq auto-save-list-file-prefix
@@ -243,6 +243,9 @@
 			   (or "python")
 			   file)))))
 
+;; nxhtml
+;; (load "~/.emacs.d/packages/nxhtml/autostart.el")
+
 
 ;; java/processing via ant
 (add-hook 'java-mode-hook
@@ -252,6 +255,14 @@
 			   (or "ant")
 			   ))))
 
+<<<<<<< HEAD
+=======
+;; c-mode with tab 4 space for .ino (propinquity)
+(add-to-list 'auto-mode-alist '("\\.ino\\'" . c-mode))
+(setq tab-width 4) ; or any other preferred value
+(defvaralias 'c-basic-offset 'tab-width)
+
+>>>>>>> 20d143c53aef280a4b8780f8eeb90497dba847ef
 ;; org
 (setq load-path (cons "~/.emacs.d/packages/org-jambu/lisp" load-path))
 (setq load-path (cons "~/.emacs.d/packages/org-jambu/contrib/lisp" load-path))
