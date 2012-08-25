@@ -243,10 +243,6 @@
 			   (or "python")
 			   file)))))
 
-;; nxhtml
-;; (load "~/.emacs.d/packages/nxhtml/autostart.el")
-
-
 ;; java/processing via ant
 (add-hook 'java-mode-hook
 	  (lambda ()
@@ -257,8 +253,8 @@
 
 ;; c-mode with tab 4 space for .ino (propinquity)
 (add-to-list 'auto-mode-alist '("\\.ino\\'" . c-mode))
-(setq tab-width 4) ; or any other preferred value
-(defvaralias 'c-basic-offset 'tab-width)
+;; (setq tab-width 2) ; or any other preferred value
+;; (defvaralias 'c-basic-offset 'tab-width)
 
 ;; org
 (setq load-path (cons "~/.emacs.d/packages/org-jambu/lisp" load-path))
@@ -284,3 +280,26 @@
 	       ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
 	       ("\\paragraph{%s}" . "\\paragraph*{%s}")
 	       ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+
+;; yaml
+(require 'yaml-mode)
+(add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
+(add-to-list 'auto-mode-alist '("\\.yaml$" . yaml-mode))
+(add-hook 'yaml-mode-hook
+	  '(lambda ()
+	     (define-key yaml-mode-map "\C-m" 'newline-and-indent)))
+
+;; jinja2
+(require 'jinja2-mode)
+(add-to-list 'auto-mode-alist '("\\.j2$" . jinja2-mode))
+
+;; web-multi-mode
+(add-to-list 'load-path "~/.emacs.d/packages/multi-web-mode")
+(require 'multi-web-mode)
+(setq mweb-default-major-mode 'html-mode)
+(setq mweb-tags '(;; (php-mode "<\\?php\\|<\\? \\|<\\?=" "\\?>")
+		  (js-mode "<script +\\(type=\"text/javascript\"\\|language=\"javascript\"\\)[^>]*>" "</script>")
+		  (css-mode "<style +type=\"text/css\"[^>]*>" "</style>")))
+(setq mweb-filename-extensions '("php" "htm" "html" "ctp" "phtml" "php4" "php5"))
+(multi-web-global-mode 1)
+
