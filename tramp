@@ -1,15 +1,14 @@
-;; -*- emacs-lisp -*-
+;; -*- emacs-lisp -*- <12/06/07 13:27:19 /Users/vdb/.emacs.d/tramp>
 ;; Tramp connection history.  Don't change this file.
 ;; You can delete it, forcing Tramp to reapply the checks.
 
-((["scpc" nil "sudo" nil]
-  nil)
- (["sudo" "root" "2000db-mba.local" nil]
-  ("uname" "Darwin 11.3.0")
+((["sudo" "root" "2000db-mba.local" nil]
+  ("uname" "Darwin 11.4.0")
   ("test" "test")
   ("remote-path"
    ("/usr/bin" "/bin" "/usr/sbin" "/sbin" "/usr/local/bin"))
   ("remote-shell" "/bin/sh")
+  ("busybox" nil)
   ("stat" nil)
   ("perl-file-spec" t)
   ("perl-cwd-realpath" t)
@@ -19,9 +18,9 @@
   ("readlink" nil)
   ("file-exists" "test -e")
   ("uid-integer" 0)
+  ("ls" "/bin/ls")
   ("local-encoding" base64-encode-region)
   ("local-decoding" base64-decode-region)
   ("remote-encoding" tramp-perl-encode-with-module)
   ("remote-decoding" tramp-perl-decode-with-module)
-  ("inline-compress" "gzip")
-  ("inline-decompress" "gzip -d")))
+  ("~root" "/var/root")))

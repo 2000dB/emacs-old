@@ -32,7 +32,7 @@
 	   (indent-region (region-beginning) (region-end) nil))))
 (global-set-key (kbd "RET") 'newline-and-indent) ;; maintain indention level on new line
 
-;; scrolling
+;; SCROLLING
 (setq 
   scroll-margin 0
   scroll-conservatively 100000
@@ -67,7 +67,7 @@
 (icomplete-mode t)
 
 ;; CACHE
-;; backups
+;; backups - broken
 (setq make-backup-files t ;; make backups
   backup-by-copying t     ;; set directory
   backup-directory-alist '(("." . "~/.emacs.d/backups")) 
@@ -118,15 +118,15 @@
  '("\\` " "^\*Mess" "\*scra" "^\*Back" ".*Completion" "^\*Ido" "^\*trace"
    "^\*compilation" "^\*GTAGS" "^session\.*" "^\*")
  ido-work-directory-list '("~/" "~/Desktop" "~/Documents" "~src")
- ido-case-fold  t                 ; be case-insensitive
+ ido-case-fold  t                    ; be case-insensitive
  ido-enable-last-directory-history t ; remember last used dirs
- ido-max-work-directory-list 30   ; should be enough
- ido-max-work-file-list      50   ; remember many
- ido-use-filename-at-point nil    ; don't use filename at point (annoying)
- ido-enable-flex-matching nil     ; don't try to be too smart
- ido-max-prospects 8              ; don't spam my minibuffer
- ido-create-new-buffer 'always    ; 
- ido-confirm-unique-completion nil) ; wait for RET, even with unique completion
+ ido-max-work-directory-list 30      ; should be enough
+ ido-max-work-file-list      50      ; remember many
+ ido-use-filename-at-point nil       ; don't use filename at point (annoying)
+ ido-enable-flex-matching nil        ; don't try to be too smart
+ ido-max-prospects 8                 ; don't spam my minibuffer
+ ido-create-new-buffer 'always       ; 
+ ido-confirm-unique-completion nil)  ; wait for RET, even with unique completion
 
 ;; uniquify
 (require 'uniquify) ;; makes buffer names unique without <2> type stuff
@@ -135,6 +135,10 @@
  uniquify-separator ":"
  uniquify-after-kill-buffer-p t
  uniquify-ignore-buffers-re "^\\*")
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; SPELLING
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; aspell
 (setq ispell-program-name "aspell"
@@ -181,9 +185,13 @@
 
 (require 'rect-mark) ;; rectangle selection highlight
 
-;; keymap
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; KEYMAP
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defvar vdb-keys-minor-mode-map (make-keymap) "vdb-keys-minor-mode.")
 (define-key vdb-keys-minor-mode-map (kbd "C-c C-c") 'vdb-compile)
+(define-key vdb-keys-minor-mode-map (kbd "C-c C-k") 'kill-compilation)
 (define-key vdb-keys-minor-mode-map (kbd "C-c C-r") 'replace-string)
 (define-key vdb-keys-minor-mode-map (kbd "C-c r C-SPC") 'rm-set-mark)
 (define-key vdb-keys-minor-mode-map (kbd "C-c r C-r") 'replace-rectangle)
@@ -212,6 +220,7 @@
 ;; COMPILATION 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (require 'compile)
+(setq compilation-scroll-output t)
 
 ;; ;; lets make the compile behave how we want: small horizontal buffer
 (defun vdb-compile ()
@@ -243,22 +252,41 @@
 			   (or "python")
 			   file)))))
 
+
+
+;; processing/.pde files
+(add-to-list 'auto-mode-alist '("\\.pde\\'" . java-mode))
+
 ;; java/processing via ant
 (add-hook 'java-mode-hook
 	  (lambda ()
-	    (set (make-local-variable 'compile-command)
+	    (if (string-match "\\.pde\\'" buffer-file-name)
+		(set (make-local-variable 'compile-command)
+		     (let ((file (file-name-directory buffer-file-name)))
+		     (format "%s%s %s%s%s"
+			     (or "processing-java --force --run --sketch=")
+			     file
+			     (or "--output=")
+			     file
+			     (or "tmp"))))
+	      (set (make-local-variable 'compile-command)
 		   (format "%s -find" ;; for now just look for the build file in the tree
-			   (or "ant")
-			   ))))
+			   (or "ant"))))))
 
-;; c-mode with tab 4 space for .ino (propinquity)
+
+
+;; arduino .ino files
 (add-to-list 'auto-mode-alist '("\\.ino\\'" . c-mode))
 ;; (setq tab-width 2) ; or any other preferred value
 ;; (defvaralias 'c-basic-offset 'tab-width)
 
-;; org
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; ORG
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (setq load-path (cons "~/.emacs.d/packages/org-jambu/lisp" load-path))
 (setq load-path (cons "~/.emacs.d/packages/org-jambu/contrib/lisp" load-path))
+
 
 (require 'org-install)
 (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
@@ -268,18 +296,27 @@
 	  (lambda ()
 	    (flyspell-mode)))
 
+
+;; not optimal
 (require 'org-latex)
 (unless (boundp 'org-export-latex-classes)
   (setq org-export-latex-classes nil))
 (add-to-list 'org-export-latex-classes
 	     '("letter"
 	       "\\documentclass[11pt]{letter}"
-
 	       ("\\section{%s}" . "\\section*{%s}")
 	       ("\\subsection{%s}" . "\\subsection*{%s}")
 	       ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
 	       ("\\paragraph{%s}" . "\\paragraph*{%s}")
 	       ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+
+
+;; ack (full-ack)
+
+(autoload 'ack-same "full-ack" nil t)
+(autoload 'ack "full-ack" nil t)
+(autoload 'ack-find-same-file "full-ack" nil t)
+(autoload 'ack-find-file "full-ack" nil t)
 
 ;; yaml
 (require 'yaml-mode)
@@ -302,4 +339,3 @@
 		  (css-mode "<style +type=\"text/css\"[^>]*>" "</style>")))
 (setq mweb-filename-extensions '("php" "htm" "html" "ctp" "phtml" "php4" "php5"))
 (multi-web-global-mode 1)
-
